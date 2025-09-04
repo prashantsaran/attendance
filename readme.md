@@ -89,30 +89,74 @@ CREATE DATABASE attendance_db;
 
 📡 API Endpoints
 1. Mark Attendance
-POST /api/attendance/mark?employeeId=101
+POST api/attendance/punch
+payload :
+{
+    "employeeId": 125
+}
+Response :
+
+{
+    "id": 2177,
+    "employeeId": 125,
+    "punchType": "OUT",
+    "timestamp": "2025-09-04T11:34:17.8865948"
+}
 
 
 Toggles Punch In / Punch Out automatically.
 
 2. Get Attendance Report
-GET /api/attendance?employeeId=101&from=2025-09-01T00:00:00&to=2025-09-03T23:59:59
+GET /api/attendance/126?from=2025-09-01&to=2025-09-03
 
 
 Response Example
 
 {
-  "employeeId": 101,
-  "attendancePerDay": [
-    {
-      "date": "2025-09-01",
-      "records": [
-        { "id": 1, "employeeId": 101, "timestamp": "2025-09-01T09:00:00", "action": "PUNCH_IN" },
-        { "id": 2, "employeeId": 101, "timestamp": "2025-09-01T17:30:00", "action": "PUNCH_OUT" }
-      ],
-      "totalWorkHours": "8h 30m"
-    }
-  ],
-  "totalDuration": "8h 30m"
+    "dailyRecords": {
+        "2025-09-03": [
+            {
+                "punchType": "IN",
+                "timestamp": "2025-09-03T15:45:11.559012"
+            },
+            {
+                "punchType": "OUT",
+                "timestamp": "2025-09-03T15:45:54.086459"
+            },
+            {
+                "punchType": "IN",
+                "timestamp": "2025-09-03T15:45:55.295838"
+            },
+            {
+                "punchType": "OUT",
+                "timestamp": "2025-09-03T16:07:19.774374"
+            },
+            {
+                "punchType": "IN",
+                "timestamp": "2025-09-03T16:12:31.355327"
+            },
+            {
+                "punchType": "OUT",
+                "timestamp": "2025-09-03T16:12:34.134582"
+            },
+            {
+                "punchType": "IN",
+                "timestamp": "2025-09-03T16:12:44.233956"
+            },
+            {
+                "punchType": "OUT",
+                "timestamp": "2025-09-03T16:54:02.945"
+            },
+            {
+                "punchType": "IN",
+                "timestamp": "2025-09-03T16:54:04.918744"
+            }
+        ]
+    },
+    "dailySummary": {
+        "2025-09-03": "62 minutes"
+    },
+    "totalSummary": "62 minutes"
 }
 
 🧪 Testing
@@ -121,4 +165,4 @@ Use Postman or cURL for API testing.
 
 Example:
 
-curl -X POST "http://localhost:8080/api/attendance/mark?employeeId=101"
+curl --location 'http://localhost:8080/api/attendance/126?from=2025-09-01&to=2025-09-04'
