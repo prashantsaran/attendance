@@ -6,7 +6,6 @@ import java.util.Map;
 public class AttendanceResponse {
     public AttendanceResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	private Map<String, List<AttendanceRecordDto>> dailyRecords;
     private Map<String, String> dailySummary;
@@ -39,5 +38,4 @@ public class AttendanceResponse {
 		this.totalSummary = totalSummary;
 	}
 
-    // constructors, getters, setters
 }
