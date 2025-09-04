@@ -1,4 +1,4 @@
-Attendance Management System (Spring Boot)
+**Attendance Management System (Spring Boot)**
 📌 Overview
 
 This is a Spring Boot CRUD-based Attendance Management System that allows employees to punch in and punch out multiple times per day and retrieve attendance reports for a given duration.
