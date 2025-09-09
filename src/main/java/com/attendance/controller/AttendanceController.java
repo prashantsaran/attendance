@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,26 +19,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.attendance.entity.AttendanceRecord;
 import com.attendance.entity.AttendanceResponse;
+import com.attendance.entity.Employee;
+import com.attendance.entity.MyResponse;
 import com.attendance.service.AttendanceService;
+import com.attendance.service.EmployeeService;
+
+
+
+
 
 
 @RestController
 @RequestMapping("/api/attendance")
 public class AttendanceController {
+	
+	
 
     private final AttendanceService attendanceService;
+    private final EmployeeService employeeService;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, EmployeeService employeeService) {
         this.attendanceService = attendanceService;
+        this.employeeService = employeeService;
     }
 
     @PostMapping("/punch")
-    public ResponseEntity<?> punch(@RequestBody Map<String, Long> payload) {
-      
+    public ResponseEntity<MyResponse<Employee>> punch(@RequestBody Map<String, Long> payload) {
+    	MyResponse response = new MyResponse();
 
         Long employeeId = payload.get("employeeId");
+        
         AttendanceRecord record = attendanceService.markAttendance(employeeId);
-        return ResponseEntity.ok(record);
+        response.setData(record);
+        response.setMessage("Attendance Marked Successfully !");
+        response.setStatus(HttpStatus.OK.value());
+   	 return ResponseEntity.status(200).body(response);
     }
 
     @GetMapping("/{employeeId}")
@@ -55,5 +69,21 @@ public class AttendanceController {
 
         AttendanceResponse response = attendanceService.getAttendanceSummaryInMinutes(employeeId, fromDateTime, toDateTime);
         return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/addEmployee")
+    public Employee addEmployee(@RequestBody Employee e){
+    	return employeeService.addEmployee(e);
+    }
+    
+    @GetMapping("/getAllEmployee")
+    public List<Employee> getAllEmployee(){
+    	return  employeeService.getAllEmployee();
+    	
+    }
+    
+    @GetMapping("/getAllRecords")
+    public List<AttendanceRecord> getAllRecord(){
+    	return  attendanceService.findAllRecords();
     }
 }

@@ -16,33 +16,51 @@ import org.springframework.stereotype.Service;
 import com.attendance.entity.AttendanceRecord;
 import com.attendance.entity.AttendanceRecordDto;
 import com.attendance.entity.AttendanceResponse;
+import com.attendance.entity.Employee;
+import com.attendance.exception.EmployeeNotFoundException;
+import com.attendance.exception.RecordNotFoundException;
 import com.attendance.repository.AttendanceRepository;
+import com.attendance.repository.EmployeeRepository;
 
 @Service
 public class AttendanceService {
     @Autowired
     private AttendanceRepository attendanceRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     public AttendanceRecord markAttendance(Long employeeId) {
-        Optional<AttendanceRecord> lastRecordOpt = attendanceRepository.findTopByEmployeeIdOrderByTimestampDesc(employeeId);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+
+//        if (!employee.isPresent()) {
+//            System.out.println("Employee not found with ID: " + employeeId);
+//            return null;
+//        }
+        Optional<AttendanceRecord> lastRecordOpt = attendanceRepository.findTopByEmployeeIdOrderByTimestampDesc(employee);
         String nextPunchType = "IN";
         if (lastRecordOpt.isPresent() && "IN".equals(lastRecordOpt.get().getPunchType())) {
             nextPunchType = "OUT";
         }
-
         AttendanceRecord record = new AttendanceRecord();
-        record.setEmployeeId(employeeId);
+        
+//        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        record.setEmployeeId(employee);
         record.setPunchType(nextPunchType);
         record.setTimestamp(LocalDateTime.now());
         return attendanceRepository.save(record);
     }
 
-    public List<AttendanceRecord> getAttendance(Long employeeId, LocalDateTime from, LocalDateTime to) {
-        return attendanceRepository.findByEmployeeIdAndTimestampBetween(employeeId, from, to);
-    }
+//    public List<AttendanceRecord> getAttendance(Long employeeId, LocalDateTime from, LocalDateTime to) {
+//        return attendanceRepository.findByEmployeeIdAndTimestampBetween(employeeId, from, to);
+//    }
 
     public AttendanceResponse getAttendanceSummaryInMinutes(Long employeeId, LocalDateTime from, LocalDateTime to) {
-        List<AttendanceRecord> records = attendanceRepository.findByEmployeeIdAndTimestampBetween(employeeId, from, to);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+
+        List<AttendanceRecord> records = attendanceRepository.findByEmployeeIdAndTimestampBetween(employee, from, to);
+        if(records.size()==0) {
+            throw new RecordNotFoundException();
+        }
 
         Map<String, List<AttendanceRecordDto>> dailyRecords = new LinkedHashMap<>();
         Map<String, Long> dailySummaryInMinutes = new LinkedHashMap<>();
@@ -97,5 +115,10 @@ public class AttendanceService {
             return String.format("%d hours %d minutes", hours, minutes);
         }
     }
+
+	public List<AttendanceRecord> findAllRecords() {
+		// TODO Auto-generated method stub
+		return attendanceRepository.findAll();
+	}
 
 }

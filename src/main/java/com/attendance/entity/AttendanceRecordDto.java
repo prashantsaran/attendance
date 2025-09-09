@@ -12,7 +12,6 @@ public class AttendanceRecordDto {
         this.punchType = punchType;
         this.timestamp = timestamp;
     }
-    // getters, setters
 
 	public String getPunchType() {
 		return punchType;
