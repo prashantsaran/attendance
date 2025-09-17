@@ -1,6 +1,10 @@
 package com.attendance.exception;
 
 import com.attendance.entity.MyResponse;
+
+import io.jsonwebtoken.ExpiredJwtException;
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,4 +40,27 @@ public class GlobalExceptionHandler {
     	return ResponseEntity.status(HttpStatus.OK).body(response);
     			
     }
+    
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<MyResponse<?>> handleExpiredJwtException(ExpiredJwtException ex) {
+        MyResponse<?> response = new MyResponse<>(
+                "JWT token expired", null, HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(io.jsonwebtoken.security.SignatureException.class)
+    public ResponseEntity<MyResponse<?>> handleSignatureException(io.jsonwebtoken.security.SignatureException ex) {
+        MyResponse<?> response = new MyResponse<>(
+                "Invalid JWT signature", null, HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // Optionally handle any other JWT-related exception
+    @ExceptionHandler(io.jsonwebtoken.JwtException.class)
+    public ResponseEntity<MyResponse<?>> handleJwtException(io.jsonwebtoken.JwtException ex) {
+        MyResponse<?> response = new MyResponse<>(
+                "Invalid JWT token", null, HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
 }

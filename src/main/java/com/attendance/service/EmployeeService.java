@@ -12,7 +12,7 @@ import com.attendance.repository.EmployeeRepository;
 public class EmployeeService {
 	
 	@Autowired
-	EmployeeRepository employeeRepository;
+	private  EmployeeRepository employeeRepository;
 	
 	public Employee addEmployee(Employee e) {
 		return employeeRepository.save(e);

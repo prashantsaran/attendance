@@ -20,7 +20,7 @@ private String name;
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
-@OneToMany(mappedBy = "employeeId")
+@OneToMany(mappedBy = "employee")
 @JsonManagedReference
 private List<AttendanceRecord> attendanceRecord;
 

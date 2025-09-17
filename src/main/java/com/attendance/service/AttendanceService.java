@@ -36,7 +36,7 @@ public class AttendanceService {
 //            System.out.println("Employee not found with ID: " + employeeId);
 //            return null;
 //        }
-        Optional<AttendanceRecord> lastRecordOpt = attendanceRepository.findTopByEmployeeIdOrderByTimestampDesc(employee);
+        Optional<AttendanceRecord> lastRecordOpt = attendanceRepository.findTopByEmployeeOrderByTimestampDesc(employee);
         String nextPunchType = "IN";
         if (lastRecordOpt.isPresent() && "IN".equals(lastRecordOpt.get().getPunchType())) {
             nextPunchType = "OUT";
@@ -44,7 +44,7 @@ public class AttendanceService {
         AttendanceRecord record = new AttendanceRecord();
         
 //        Optional<Employee> employee = employeeRepository.findById(employeeId);
-        record.setEmployeeId(employee);
+        record.setEmployee(employee);
         record.setPunchType(nextPunchType);
         record.setTimestamp(LocalDateTime.now());
         return attendanceRepository.save(record);
@@ -57,7 +57,7 @@ public class AttendanceService {
     public AttendanceResponse getAttendanceSummaryInMinutes(Long employeeId, LocalDateTime from, LocalDateTime to) {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
-        List<AttendanceRecord> records = attendanceRepository.findByEmployeeIdAndTimestampBetween(employee, from, to);
+        List<AttendanceRecord> records = attendanceRepository.findByEmployeeAndTimestampBetween(employee, from, to);
         if(records.size()==0) {
             throw new RecordNotFoundException();
         }
@@ -117,8 +117,18 @@ public class AttendanceService {
     }
 
 	public List<AttendanceRecord> findAllRecords() {
-		// TODO Auto-generated method stub
 		return attendanceRepository.findAll();
+	}
+	
+	public AttendanceRecord getLatestPunch(Long employeeId) {
+		attendanceRepository.findById(employeeId).orElseThrow(()-> new EmployeeNotFoundException(employeeId) );
+		AttendanceRecord rec = attendanceRepository.findLatestPunch(employeeId);
+		Optional<AttendanceRecord> record = Optional.ofNullable(rec);	
+		if(record.isEmpty()) {
+			throw new RecordNotFoundException();
+		}
+		
+		return attendanceRepository.findLatestPunch(employeeId);
 	}
 
 }

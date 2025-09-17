@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,6 @@ import com.attendance.entity.Employee;
 import com.attendance.entity.MyResponse;
 import com.attendance.service.AttendanceService;
 import com.attendance.service.EmployeeService;
-
-
-
 
 
 
@@ -73,6 +72,7 @@ public class AttendanceController {
     
     @PostMapping("/addEmployee")
     public Employee addEmployee(@RequestBody Employee e){
+    	
     	return employeeService.addEmployee(e);
     }
     
@@ -86,4 +86,18 @@ public class AttendanceController {
     public List<AttendanceRecord> getAllRecord(){
     	return  attendanceService.findAllRecords();
     }
+    
+    @GetMapping("/lastPunch/{id}")
+    public ResponseEntity<MyResponse<Employee>> findLastPunch(@PathVariable Long id){
+    	MyResponse response = new MyResponse<Employee>();
+    	AttendanceRecord atResponse=  attendanceService.getLatestPunch(id);
+    	response.setData(atResponse);
+    	response.setStatus(HttpStatus.OK.value());
+    	response.setMessage("Latest Attendance of employee with id : "+ id + "Fetched Successfully");
+    	
+    	return ResponseEntity.ok(response);
+    	}
+    
+    
+   
 }

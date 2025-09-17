@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
@@ -18,7 +19,8 @@ public class AttendanceRecord {
     
     @ManyToOne
 	@JsonBackReference
-    private Employee employeeId;
+	@JoinColumn(name = "employee_id")
+    private Employee employee;
     private String punchType; // "IN" or "OUT"
     private LocalDateTime timestamp;
     
@@ -27,7 +29,7 @@ public class AttendanceRecord {
     
 	@Override
 	public String toString() {
-		return "AttendanceRecord [id=" + id + ", employeeId=" + employeeId + ", punchType=" + punchType + ", timestamp="
+		return "AttendanceRecord [id=" + id + ", employeeId=" + employee + ", punchType=" + punchType + ", timestamp="
 				+ timestamp + "]";
 	}
 	
@@ -39,10 +41,10 @@ public class AttendanceRecord {
 
 
 
-	public AttendanceRecord(Long id, Employee employeeId, String punchType, LocalDateTime timestamp) {
+	public AttendanceRecord(Long id, Employee employee, String punchType, LocalDateTime timestamp) {
 		super();
 		this.id = id;
-		this.employeeId = employeeId;
+		this.employee = employee;
 		this.punchType = punchType;
 		this.timestamp = timestamp;
 	}
@@ -55,11 +57,11 @@ public class AttendanceRecord {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Employee getEmployeeId() {
-		return employeeId;
+	public Employee getEmployee() {
+		return employee;
 	}
-	public void setEmployeeId(Employee employeeId) {
-		this.employeeId = employeeId;
+	public void setEmployee(Employee employeeId) {
+		this.employee = employeeId;
 	}
 	public String getPunchType() {
 		return punchType;
